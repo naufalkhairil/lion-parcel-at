@@ -52,8 +52,8 @@ def date_eval(**kwargs):
 start_date = datetime(2024, 10, 23, tzinfo=timezone('Asia/Jakarta'))
 end_date = None
 catchup=True
-# schedule='0 * * * *'
-schedule=None
+schedule='0 * * * *'
+# schedule=None
 
 PARENT_DAG_NAME = 'extract_transactions'
 gcs_bucket = "bbg-datatemp-dev"
