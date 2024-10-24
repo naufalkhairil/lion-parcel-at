@@ -9,6 +9,8 @@ CREATE DATABASE airflow WITH OWNER = airflow;
 
 ### Make .env
 
+Rename `.env.example` to `.env` and update variable values
+
 ```
 AIRFLOW_UID=1000
 AIRFLOW_DB_NAME="airflow"
