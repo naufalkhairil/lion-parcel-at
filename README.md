@@ -42,3 +42,9 @@ for the test case, run setup.sh to create example table
 ```
 ./database/setup.sh -e .env -m up -s database/migrate.up.sql
 ```
+
+> for resetting the test case, run migrate down
+
+```
+./database/setup.sh -e .env -m down -s database/migrate.down.sql
+```

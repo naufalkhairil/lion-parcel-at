@@ -45,6 +45,30 @@ BEFORE UPDATE ON retail_transactions
 FOR EACH ROW
 EXECUTE FUNCTION set_deleted_at();
 
+-- HARD DELETE CASE
+-- Create the retail_transactions_archive table
+CREATE TABLE IF NOT EXISTS retail_transactions_archive (
+    customer_id VARCHAR(255) NOT NULL,
+    deleted_at TIMESTAMP 
+);
+
+-- Trigger function for insert record to archive table when row deleted
+CREATE OR REPLACE FUNCTION log_delete()
+RETURNS TRIGGER AS $$
+BEGIN
+    DELETE FROM retail_transactions_archive WHERE customer_id = old.customer_id;
+    INSERT INTO retail_transactions_archive (customer_id, deleted_at)
+    VALUES (old.customer_id, now());
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger for insert record to archive table when row deleted
+CREATE TRIGGER trigger_log_delete
+AFTER DELETE ON retail_transactions
+FOR EACH ROW
+EXECUTE FUNCTION log_delete();
+
 -- Insert dummy records
 INSERT INTO retail_transactions (customer_id, last_status, pos_origin, pos_destination)
 VALUES 

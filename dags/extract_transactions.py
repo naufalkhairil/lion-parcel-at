@@ -79,29 +79,16 @@ dag = DAG(
     tags=['extract', 'transactions']
 )
 
-with TaskGroup(dag=dag, group_id='init_tables', prefix_group_id=False) as task_init_tables:
-
-    task_init_table = BigQueryCreateEmptyTableOperator(
-        task_id="init_table",
-        dataset_id=dest_table.split(".")[1],
-        table_id=dest_table.split(".")[2],
-        schema_fields=transactions_schema.table_schema,
-        time_partitioning=transactions_schema.partition_field,
-        cluster_fields=transactions_schema.cluster_fields,
-        gcp_conn_id="google_cloud_default",
-        dag=dag
-    )
-
-    task_init_table_hd = BigQueryCreateEmptyTableOperator(
-        task_id="init_table_hd",
-        dataset_id=dest_table_hd.split(".")[1],
-        table_id=dest_table_hd.split(".")[2],
-        schema_fields=transactions_schema.table_hd_schema,
-        time_partitioning=transactions_schema.partition_field,
-        cluster_fields=transactions_schema.cluster_fields,
-        gcp_conn_id="google_cloud_default",
-        dag=dag
-    )
+task_init_table = BigQueryCreateEmptyTableOperator(
+    task_id="init_table",
+    dataset_id=dest_table.split(".")[1],
+    table_id=dest_table.split(".")[2],
+    schema_fields=transactions_schema.table_schema,
+    time_partitioning=transactions_schema.partition_field,
+    cluster_fields=transactions_schema.cluster_fields,
+    gcp_conn_id="google_cloud_default",
+    dag=dag
+)
 
 task_date_eval = PythonOperator(
     task_id='date_eval',
@@ -144,46 +131,17 @@ task_load_to_temp = GCSToBigQueryOperator(
     dag=dag
 )
 
-with TaskGroup(dag=dag, group_id='soft_delete_table', prefix_group_id=False) as task_soft_delete_table:
-
-    task_update_table = BigQueryExecuteQueryOperator(
-        task_id="update_table",
-        sql="sql/transactions/update_table.sql",
-        params=dict(
-            target_table = dest_table,
-            source_table = temp_table.format(ymdh="")
-        ),
-        use_legacy_sql=False,
-        gcp_conn_id="google_cloud_default",
-        dag=dag
-    )
-
-with TaskGroup(dag=dag, group_id='hard_delete_table', prefix_group_id=False) as task_hard_delete_table:
-
-    task_update_table_hd = BigQueryExecuteQueryOperator(
-        task_id="update_table_hd",
-        sql="sql/transactions/update_table_hd.sql",
-        params=dict(
-            target_table = dest_table_hd,
-            source_table = temp_table.format(ymdh="")
-        ),
-        use_legacy_sql=False,
-        gcp_conn_id="google_cloud_default",
-        dag=dag
-    )
-
-    task_hard_delete = BigQueryExecuteQueryOperator(
-        task_id="hard_delete",
-        sql="sql/transactions/hard_delete.sql",
-        params=dict(
-            target_table = dest_table_hd,
-        ),
-        use_legacy_sql=False,
-        gcp_conn_id="google_cloud_default",
-        dag=dag
-    )
-
-    task_update_table_hd >> task_hard_delete
+task_update_table = BigQueryExecuteQueryOperator(
+    task_id="update_table",
+    sql="sql/transactions/update_table.sql",
+    params=dict(
+        target_table = dest_table,
+        source_table = temp_table.format(ymdh="")
+    ),
+    use_legacy_sql=False,
+    gcp_conn_id="google_cloud_default",
+    dag=dag
+)
 
 with TaskGroup(dag=dag, group_id='clean_temp', prefix_group_id=False) as task_clean_temp:
 
@@ -206,4 +164,4 @@ with TaskGroup(dag=dag, group_id='clean_temp', prefix_group_id=False) as task_cl
         dag=dag
     )
 
-task_init_table >> task_date_eval >> task_extract_to_gcs >> task_load_to_temp >> [task_soft_delete_table, task_hard_delete_table] >> task_clean_temp
+task_init_table >> task_date_eval >> task_extract_to_gcs >> task_load_to_temp >> task_update_table >> task_clean_temp

@@ -19,6 +19,11 @@ table_hd_schema = [
     {"name": "updated_at","mode": "NULLABLE","type": "TIMESTAMP","description": "","fields": []}
 ]
 
+table_schema_arcv = [
+    {"name": "customer_id","mode": "NULLABLE","type": "STRING","description": "","fields": []},
+    {"name": "deleted_at","mode": "NULLABLE","type": "TIMESTAMP","description": "","fields": []}
+]
+
 partition_field = {"type": "DAY", "field": "created_at", "requirePartitionFilter": True}
 
 cluster_fields = ["customer_id", "last_status"]
