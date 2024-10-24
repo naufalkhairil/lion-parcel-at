@@ -1,12 +1,12 @@
 -- Drop the triggers first
 DROP TRIGGER IF EXISTS trigger_set_deleted_at ON retail_transactions;
 DROP TRIGGER IF EXISTS trigger_update_timestamp ON retail_transactions;
-DROP TRIGGER IF EXISTS trigger_log_delete ON retail_transactions_archive;
+DROP TRIGGER IF EXISTS trigger_log_delete ON retail_transactions;
 
 -- Drop the functions
 DROP FUNCTION IF EXISTS set_deleted_at();
 DROP FUNCTION IF EXISTS update_timestamp();
-DROP FUNCtiON IF EXISTS log_delete();
+DROP FUNCtION IF EXISTS log_delete();
 
 -- Drop the retail_transactions table
 DROP TABLE IF EXISTS retail_transactions;
