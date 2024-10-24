@@ -24,7 +24,6 @@ EXAMPLE_DB_HOST="localhost"
 EXAMPLE_DB_PASSWORD="postgres"
 EXAMPLE_DB_PORT="5432"
 GOOGLE_APPLICATION_CREDENTIALS="./credential.json"
-AIRFLOW_LOCAL_PATH="./mount"
 ```
 
 ### Run docker compose
