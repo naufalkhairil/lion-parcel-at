@@ -1,0 +1,10 @@
+retail_transactions
+
+id integer
+customer_id varchar
+last_status varchar
+pos_origin varchar
+pos_destination varchar
+created_at datetime with trigger if created
+updated_at datetime with trigger if created or updated
+deleted_at datetime with trigger if last_status is "DONE" then deleted
