@@ -1,11 +1,13 @@
-create airflow user and database
+# How to Setup
+
+### Create airflow user and database
 
 ```
 CREATE USER airflow WITH PASSWORD 'airflow';
 CREATE DATABASE airflow WITH OWNER = airflow;
 ```
 
-make .env
+### Make .env
 
 ```
 AIRFLOW_UID=1000
@@ -23,7 +25,7 @@ GOOGLE_APPLICATION_CREDENTIALS="./credential.json"
 AIRFLOW_LOCAL_PATH="./mount"
 ```
 
-run compose
+### Run docker compose
 
 > Make sure compose and env file in same path
 
@@ -31,11 +33,15 @@ run compose
 docker compose up -d
 ```
 
+### Initialize connections
+
 after airflow up, run this to initialize connections
 
 ```
 ./init-airflow-connection.sh
 ```
+
+### Initialize dummy table
 
 for the test case, run setup.sh to create example table
 
